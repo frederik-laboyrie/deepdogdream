@@ -3,14 +3,10 @@ from keras.models import load_model
 import os
 import numpy as np
 import scipy
-#from scipy.optimize import minimize
-#from skimage import img_as_float, img_as_ubyte
-#from skimage.io import imread, imsave
-#from skimage.transform import pyramid_gaussian, rescale
 
 from imagestoarray import preprocess_image, deprocess_image
 
-MODEL = load_model('model1.h5')
+MODEL = load_model('model3.h5')
 
 DREAM = MODEL.input
 
@@ -22,12 +18,14 @@ HYPERPARAMETERS = {
     'max_loss':10.
 }
 
-IMAGE_PATH = 'pitbulls/images/' + os.listdir('pitbulls/images/')[0]
+IMAGE_PATH = 'pitbull/images/' + os.listdir('pitbull/images/')[0]
+
+SETTINGS = None
 
 def define_loss(K=K, settings=SETTINGS, model=MODEL):
     layer_dict = dict([(layer.name, layer) for layer in model.layers])
     loss = K.variable(0.)
-    for layer_name in settings['features']:
+    for layer_name in list(layer_dict.keys()):
         # Add the L2 norm of the features of a layer to the loss.
         # Ignoring settings for now
         #assert layer_name in layer_dict.keys(), 'Layer ' + layer_name + ' not found in model.'
@@ -51,7 +49,7 @@ def compute_gradients(loss, dream=DREAM, K=K):
 
 def eval_loss_and_grads(x):
     #fetch_loss_and_grads defined in at runtime
-    outs = fetch_loss_and_grads(x)
+    outs = fetch_loss_and_grads([x])
     loss_value = outs[0]
     grad_values = outs[1]
     return loss_value, grad_values
@@ -128,5 +126,6 @@ if __name__ == '__main__':
     outputs = [loss, grads]
     fetch_loss_and_grads = K.function([DREAM], outputs)
     successive_shapes, original_img, shrunk_original_img = path_to_pyramid()
+    print(x.shape for x in successive_shapes)
     dream_img = deepdream(successive_shapes, original_img, shrunk_original_img)
     save_img(dream_img, fname=IMAGE_PATH + 'dream' + '.png')

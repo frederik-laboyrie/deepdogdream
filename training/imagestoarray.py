@@ -22,8 +22,6 @@ def generate_array(directory_path):
     return dog_array
 
 def deprocess_image(x, one_minus_one=False):
-    x = x.reshape((3, x.shape[2], x.shape[3]))
-    x = x.transpose((1, 2, 0))
     x = x.reshape((x.shape[1], x.shape[2], 3))
     if one_minus_one:
         x /= 2.
