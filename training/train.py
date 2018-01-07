@@ -6,7 +6,7 @@ from imagestoarray import generate_array
 PATH = 'pitbull/images/'
 
 def train_model(model_name='model', epochs=10):
-    autoencoder = basic_convolutional_autoencoder()
+    autoencoder = basic_convolutional_autoencoder(input_shape=(None, None, 3))
     autoencoder.fit(x_train, x_train,
                     epochs=int(epochs),
                     batch_size=1,
